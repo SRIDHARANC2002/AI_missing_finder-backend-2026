@@ -21,20 +21,32 @@ const app = express();
 // ============================
 // CORS CONFIGURATION
 // ============================
-// ✅ CORS CONFIGURATION
-// ============================
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://ai-missing-finder-frontend-2026-gfv.vercel.app"
-];
-app.use(cors({
-  origin: ["http://localhost:5173", "https://ai-missing-finder-frontend-2026-gfv.vercel.app"],
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://ai-missing-finder-frontend-2026-gfv.vercel.app"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
-}));
-app.options("*", cors());
+};
+
+app.use(cors(corsOptions));
+
+// ✅ Fix: Express 5 / path-to-regexp no longer accepts bare "*"
+// Use a middleware-level preflight handler instead
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 // ============================
 // MIDDLEWARE
 // ============================
