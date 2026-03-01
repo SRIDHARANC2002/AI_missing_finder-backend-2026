@@ -19,24 +19,25 @@ connectDB();
 const app = express();
 
 // ============================
+// CORS CONFIGURATION
+// ============================
 // ✅ CORS CONFIGURATION
 // ============================
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ai-missing-finder-frontend-2026-gfv.vercel.app/"
+  "https://ai-missing-finder-frontend-2026-gfv.vercel.app"
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow Postman or server-to-server requests
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+        callback(null, true);
       } else {
-        return callback(new Error("Not allowed by CORS"));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -44,10 +45,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// ✅ Handle Preflight Requests Properly
-app.use(cors());
-
 // ============================
 // MIDDLEWARE
 // ============================
