@@ -18,8 +18,19 @@ connectDB();
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ai-missing-finder-frontend-2026.vercel.app"
+];
+
 app.use(cors({
-  origin: "https://ai-missing-finder-frontend-2026.vercel.app",  // React Vite port
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
