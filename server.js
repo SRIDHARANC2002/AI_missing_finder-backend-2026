@@ -19,7 +19,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:5173",  // React Vite port
+  origin: "https://ai-missing-finder-frontend-2026.vercel.app",  // React Vite port
   credentials: true
 }));
 
