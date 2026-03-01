@@ -24,7 +24,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ai-missing-finder-frontend-2026.vercel.app"
+  "https://ai-missing-finder-frontend-2026-gfv.vercel.app/"
 ];
 
 app.use(
