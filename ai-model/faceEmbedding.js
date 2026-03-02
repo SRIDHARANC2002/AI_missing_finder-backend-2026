@@ -8,32 +8,40 @@ const AI_SERVICE_URL =
    GENERATE EMBEDDING FROM BUFFER
 ============================= */
 export const generateEmbedding = async (fileBuffer) => {
+  try {
+    const formData = new FormData();
 
-  const formData = new FormData();
+    formData.append("file", fileBuffer, {
+      filename: "face.jpg",
+      contentType: "image/jpeg",
+    });
 
-  formData.append("file", fileBuffer, {
-    filename: "face.jpg",
-    contentType: "image/jpeg",
-  });
+    console.log("Calling AI:", AI_SERVICE_URL);
 
-  const response = await axios.post(
-    `${AI_SERVICE_URL}/extract-embedding`,
-    formData,
-    {
-      headers: formData.getHeaders(),
-      timeout: 30000,
+    const response = await axios.post(
+      `${AI_SERVICE_URL}/extract-embedding`,
+      formData,
+      {
+        headers: formData.getHeaders(),
+        timeout: 60000,   // ⬅️ increase timeout
+      }
+    );
+
+    const embedding = response.data?.embedding;
+
+    if (!embedding || !Array.isArray(embedding)) {
+      throw new Error("Invalid embedding returned");
     }
-  );
 
-  const embedding = response.data?.embedding;
+    return embedding;
 
-  if (!embedding || !Array.isArray(embedding)) {
-    throw new Error("Invalid embedding returned");
+  } catch (error) {
+    console.error("AI ERROR STATUS:", error.response?.status);
+    console.error("AI ERROR DATA:", error.response?.data);
+    console.error("AI ERROR MESSAGE:", error.message);
+    throw error;
   }
-
-  return embedding;
 };
-
 
 /* =============================
    GENERATE EMBEDDING FROM URL

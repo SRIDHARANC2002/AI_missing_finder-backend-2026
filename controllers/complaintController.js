@@ -47,14 +47,21 @@ export const createComplaint = async (req, res) => {
         throw new Error("Invalid embedding length");
       }
 
+      console.log("✅ Embedding generated");
+
     } catch (embError) {
-      console.error("AI Embedding error:", embError.message);
-      return res.status(422).json({
-        message: "Face not detected or AI service failed",
+      const status = embError.response?.status || 500;
+      const message =
+        embError.response?.data?.detail ||
+        embError.message ||
+        "AI service failed";
+
+      console.error("❌ Embedding Error:", message);
+
+      return res.status(status).json({
+        message,
       });
     }
-
-    console.log("✅ Embedding generated");
 
     // 3️⃣ Save complaint
     const complaint = await Complaint.create({
@@ -134,12 +141,26 @@ export const verifyComplaintImage = async (req, res) => {
 
     console.log("🤖 Generating embedding for verification image...");
 
-    const unknownEmbedding =
-      await generateEmbedding(req.file.buffer);
+    let unknownEmbedding;
 
-    if (!unknownEmbedding || unknownEmbedding.length !== 512) {
-      return res.status(422).json({
-        message: "Invalid embedding generated",
+    try {
+      unknownEmbedding = await generateEmbedding(req.file.buffer);
+
+      if (!unknownEmbedding || unknownEmbedding.length !== 512) {
+        throw new Error("Invalid embedding generated");
+      }
+
+    } catch (embError) {
+      const status = embError.response?.status || 500;
+      const message =
+        embError.response?.data?.detail ||
+        embError.message ||
+        "AI verification failed";
+
+      console.error("❌ Verification Embedding Error:", message);
+
+      return res.status(status).json({
+        message,
       });
     }
 
